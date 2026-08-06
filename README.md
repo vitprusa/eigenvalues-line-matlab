@@ -159,13 +159,24 @@ each carrying its DOF count and measured time in the header, and are read back
 rather than recomputed: the first run takes about two and a half minutes, a
 redraw of the table four seconds. Delete a cached CSV to compute that run again.
 
-The number of digits is set per problem in `problem_configs`. Both problems
-print six significant digits, except that a row needing more than eight decimals
-is written in scientific notation to two significant digits, every cell of it,
-so the row keeps one notation. In practice that is the Coffey–Evans ground
-state, which is zero and which the methods return as `1e-11` or so: six
-significant digits of that is seventeen decimals, and one such cell sets the
-width of its column for the whole table.
+The number of digits is set per problem in `problem_configs`, as `fmt_mode` and
+`fmt_n`: `'decimals'` prints `fmt_n` digits after the point, `'significant'`
+prints `fmt_n` significant digits by varying the decimals with the magnitude.
+Both problems are set to six significant digits.
+
+Fixed notation is used while it can show exactly that many digits, which it can
+while the value has at most six digits before the point and no long run of
+leading zeros after it. A cell outside that range is written in scientific
+notation to two significant digits instead. There are two ways out of the range:
+
+- **too large** — `1.2e9` has no room for a decimal, so fixed notation prints
+  all ten of its integer digits, four more than were asked for;
+- **too small** — `1e-11` needs sixteen decimals before its sixth significant
+  digit appears.
+
+Either way the cell would be far wider than an ordinary one, and a column is as
+wide as its widest cell. The test is applied per cell, not per row, so a single
+run falling out of range does not change the notation of the rest of its row.
 
 ## Validation
 
