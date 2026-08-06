@@ -43,6 +43,7 @@ function make_eigenvalues_head_paper_tables(name)
 
     NEIG  = 8;                       % leading eigenvalues shown per table
     EXTRA = [50 100 400 500];        % deeper eigenvalues of the extended table
+    SPLIT = 3;                       % methods in the first of the two subtables
 
     here         = fileparts(mfilename('fullpath'));
     project_root = fileparts(fileparts(here));
@@ -69,7 +70,7 @@ function make_eigenvalues_head_paper_tables(name)
         rows = compute_problem(cfg, cache_dir);
 
         tex = fullfile(out_dir, sprintf('%s_eigenvalues_head_transposed.tex', cfg.name));
-        write_latex_transposed(tex, cfg, rows, NEIG, EXTRA);
+        write_latex_transposed(tex, cfg, rows, NEIG, EXTRA, SPLIT);
         fprintf('Wrote %s\n', tex);
     end
 end
@@ -323,7 +324,7 @@ function t = caption_bits(cfg)
 end
 
 
-function write_latex_transposed(tex, cfg, rows, NEIG, extras)
+function write_latex_transposed(tex, cfg, rows, NEIG, extras, split_after)
 %WRITE_LATEX_TRANSPOSED Transposed booktabs table: one row per eigenvalue.
 %
 %   One column per run (the reference plus every method and size), one row per
@@ -332,11 +333,15 @@ function write_latex_transposed(tex, cfg, rows, NEIG, extras)
 %   the DOF and timing become the two leading body rows, and the reference column
 %   stays bold.
 %
+%   The runs are split over two \subfloat blocks of one float, the first
+%   carrying the first SPLIT_AFTER methods and the second the rest. Both repeat
+%   the reference block, so that either can be read on its own.
+%
 %   EXTRAS are eigenvalue indices past the leading NEIG, each written on a row of
 %   its own after an empty row, so that the jump in the index is visible. A
-%   non-empty EXTRAS also wraps the tabular in \resizebox, the deeper eigenvalues
-%   running into six figures before the decimal point and setting every column
-%   width. Pass [] for the leading indices alone.
+%   non-empty EXTRAS also wraps each tabular in \resizebox, the deeper
+%   eigenvalues being the widest cells and so setting every column width. Pass []
+%   for the leading indices alone.
     fid = fopen(tex, 'w');
     if fid == -1
         error('head_paper:tex', 'Could not open %s for writing.', tex);
@@ -344,6 +349,87 @@ function write_latex_transposed(tex, cfg, rows, NEIG, extras)
     closer = onCleanup(@() fclose(fid)); %#ok<NASGU>
 
     t = caption_bits(cfg);
+    [parts, part_labels] = split_rows(rows, split_after);
+
+    fprintf(fid, ['%% Eigenvalue comparison for the %s problem \\texttt{%s}: ', ...
+        '%s,\n'], cfg.pretty, latex_name(cfg.name), t.method_list_plain);
+    fprintf(fid, ['%% %s, first %d eigenvalues, self-computed with timing.\n', ...
+        '%% Transposed layout: one column per run, one row per eigenvalue,\n', ...
+        '%% split over two subfloats that both repeat the reference block.\n'], ...
+        t.lev_note, NEIG);
+    if ~isempty(extras)
+        fprintf(fid, ['%% Extended with the eigenvalues %s;\n', ...
+            '%% a tabular is scaled down if it exceeds the text width.\n'], ...
+            index_list(extras));
+    end
+    fprintf(fid, '%%\n%% Requires in the preamble:\n');
+    fprintf(fid, ['%%   \\usepackage{booktabs}\n', ...
+                  '%%   \\usepackage{amsmath}\n%%   \\usepackage{listings}\n', ...
+                  '%%   \\usepackage{subfig}           %% \\subfloat\n']);
+    if ~isempty(extras)
+        fprintf(fid, '%%   \\usepackage{graphicx}          %% \\resizebox\n');
+    end
+    fprintf(fid, '\n');
+
+    fprintf(fid, '\\begin{table}[htbp]\n  \\centering\n');
+    for k = 1:numel(parts)
+        if k > 1
+            % Stacks the second subfloat under the first rather than beside it.
+            fprintf(fid, '  \\\\\n');
+        end
+        fprintf(fid, ['  \\subfloat[%s', ...
+                      '\\label{tab:eigenvalues_head_%s_transposed_%c}]{%%\n'], ...
+                part_labels{k}, cfg.name, 'a' + k - 1);
+        write_tabular(fid, cfg, parts{k}, NEIG, extras);
+        fprintf(fid, '  }\n');
+    end
+
+    timing_clause = [' Timing shows the time for the matrix assembly and ', ...
+        'full spectrum computation using \texttt{MATLAB}''s ', ...
+        '\lstinline{eig} function with the default settings.'];
+    fprintf(fid, ['  \\caption{Eigenvalues of the Sturm--Liouville operator ', ...
+        '$-y'''' + q(x)y$ on $[%s]$ with %s, the %s problem \\texttt{%s}. ', ...
+        'Numerical eigenvalues computed by each discretisation %s with varying ', ...
+        'degrees of freedom (DOF); compared with the reference eigenvalues from ', ...
+        '\\texttt{MATSLISE}, which both subfloats repeat.%s}\n'], ...
+        t.interval, cfg.q_text, cfg.pretty, latex_name(cfg.name), ...
+        t.method_list, timing_clause);
+    fprintf(fid, '  \\label{tab:eigenvalues_head_%s_transposed}\n', cfg.name);
+    fprintf(fid, '\\end{table}\n');
+end
+
+
+function [parts, labels] = split_rows(rows, split_after)
+%SPLIT_ROWS Rows for each subfloat, and the method list each one carries.
+%
+%   The reference block goes to both, so that a subfloat can be read without the
+%   other; the method groups are dealt out in order, the first SPLIT_AFTER of
+%   them to the first subfloat.
+    is_truth = strcmp({rows.group}, 'truth');
+    truth = rows(is_truth);
+    rest  = rows(~is_truth);
+
+    groups = unique({rest.group}, 'stable');
+    sel = {groups(1:min(split_after, numel(groups))), ...
+           groups(min(split_after, numel(groups)) + 1:end)};
+
+    parts = cell(1, 2);
+    labels = cell(1, 2);
+    for k = 1:2
+        parts{k} = [truth, rest(ismember({rest.group}, sel{k}))];
+        tt = cellfun(@(m) sprintf('\\texttt{%s}', m), sel{k}, ...
+                     'UniformOutput', false);
+        if numel(tt) == 1
+            labels{k} = sprintf('%s.', tt{1});
+        else
+            labels{k} = sprintf('%s and %s.', strjoin(tt(1:end-1), ', '), tt{end});
+        end
+    end
+end
+
+
+function write_tabular(fid, cfg, rows, NEIG, extras)
+%WRITE_TABULAR One subfloat's tabular: the group head, DOF, timing, eigenvalues.
     ncol = numel(rows);
     colspec = ['l', repmat('r', 1, ncol)];
 
@@ -356,40 +442,21 @@ function write_latex_transposed(tex, cfg, rows, NEIG, extras)
     end
     stops = [starts(2:end) - 1, ncol];
 
-    fprintf(fid, ['%% Eigenvalue comparison for the %s problem \\texttt{%s}: ', ...
-        '%s,\n'], cfg.pretty, latex_name(cfg.name), t.method_list_plain);
-    fprintf(fid, ['%% %s, first %d eigenvalues, self-computed with timing.\n', ...
-        '%% Transposed layout: one column per run, one row per eigenvalue.\n'], ...
-        t.lev_note, NEIG);
-    if ~isempty(extras)
-        fprintf(fid, ['%% Extended with the eigenvalues %s;\n', ...
-            '%% the tabular is scaled down if it exceeds the text width.\n'], ...
-            index_list(extras));
-    end
-    fprintf(fid, '%%\n%% Requires in the preamble:\n');
-    fprintf(fid, ['%%   \\usepackage{booktabs}\n', ...
-                  '%%   \\usepackage{amsmath}\n%%   \\usepackage{listings}\n']);
-    if ~isempty(extras)
-        fprintf(fid, '%%   \\usepackage{graphicx}          %% \\resizebox\n');
-    end
-    fprintf(fid, '\n');
-
-    fprintf(fid, '\\begin{table}[htbp]\n  \\centering\n');
     % The size and \tabcolsep changes scope to the tabular (grouped) so that the
-    % caption keeps the normal body size.
-    fprintf(fid, '  {\\scriptsize\n  \\setlength{\\tabcolsep}{3pt}\n');
+    % captions keep the normal body size.
+    fprintf(fid, '    {\\scriptsize\n    \\setlength{\\tabcolsep}{3pt}\n');
     if ~isempty(extras)
         % Scaled DOWN only: \width is the natural width of the tabular, so a
         % table that already fits is passed through at its own size rather than
         % blown up to fill the text width. Trailing %% so that the line break
         % adds no space before the tabular.
-        fprintf(fid, ['  \\resizebox{\\ifdim\\width>\\textwidth\\textwidth', ...
+        fprintf(fid, ['    \\resizebox{\\ifdim\\width>\\textwidth\\textwidth', ...
                       '\\else\\width\\fi}{!}{%%\n']);
     end
-    fprintf(fid, '  \\begin{tabular}{%s}\n    \\toprule\n', colspec);
+    fprintf(fid, '    \\begin{tabular}{%s}\n      \\toprule\n', colspec);
 
     % Group head: method name spanning its runs, underlined by \cmidrule.
-    fprintf(fid, '   ');
+    fprintf(fid, '     ');
     for g = 1:numel(starts)
         lab = rows(starts(g)).method_label;
         if ~strcmp(rows(starts(g)).group, 'truth')
@@ -397,18 +464,18 @@ function write_latex_transposed(tex, cfg, rows, NEIG, extras)
         end
         fprintf(fid, ' & \\multicolumn{%d}{c}{%s}', stops(g) - starts(g) + 1, lab);
     end
-    fprintf(fid, ' \\\\\n   ');
+    fprintf(fid, ' \\\\\n     ');
     for g = 1:numel(starts)
         fprintf(fid, ' \\cmidrule(lr){%d-%d}', starts(g) + 1, stops(g) + 1);
     end
     fprintf(fid, '\n');
 
     % Run metadata, then the eigenvalues.
-    fprintf(fid, '    DOF');
+    fprintf(fid, '      DOF');
     fprintf(fid, ' & %s', rows.dof);
-    fprintf(fid, ' \\\\\n    Time (s)');
+    fprintf(fid, ' \\\\\n      Time (s)');
     fprintf(fid, ' & %s', rows.time);
-    fprintf(fid, ' \\\\\n    \\midrule\n');
+    fprintf(fid, ' \\\\\n      \\midrule\n');
 
     for i = 1:NEIG
         write_eig_row(fid, rows, i, cfg);
@@ -416,34 +483,21 @@ function write_latex_transposed(tex, cfg, rows, NEIG, extras)
     % The deeper eigenvalues, each after an empty row: the index jumps from one
     % to the next, and a rule would read as a new block of the same sequence.
     for i = extras(:)'
-        fprintf(fid, '   %s \\\\\n', repmat(' &', 1, ncol));
+        fprintf(fid, '     %s \\\\\n', repmat(' &', 1, ncol));
         write_eig_row(fid, rows, i, cfg);
     end
 
     if isempty(extras)
-        fprintf(fid, '    \\bottomrule\n  \\end{tabular}}\n');
+        fprintf(fid, '      \\bottomrule\n    \\end{tabular}}\n');
     else
-        fprintf(fid, '    \\bottomrule\n  \\end{tabular}}}\n');   % tabular, \resizebox, size group
+        fprintf(fid, '      \\bottomrule\n    \\end{tabular}}}\n');   % tabular, \resizebox, size group
     end
-
-    timing_clause = [' Timing shows the time for the matrix assembly and ', ...
-        'full spectrum computation using \texttt{MATLAB}''s ', ...
-        '\lstinline{eig} function with the default settings.'];
-    fprintf(fid, ['  \\caption{Eigenvalues of the Sturm--Liouville operator ', ...
-        '$-y'''' + q(x)y$ on $[%s]$ with %s, the %s problem \\texttt{%s}. ', ...
-        'Numerical eigenvalues computed by each discretisation %s with varying ', ...
-        'degrees of freedom (DOF); compared with the reference eigenvalues from ', ...
-        '\\texttt{MATSLISE}.%s}\n'], ...
-        t.interval, cfg.q_text, cfg.pretty, latex_name(cfg.name), ...
-        t.method_list, timing_clause);
-    fprintf(fid, '  \\label{tab:eigenvalues_head_%s_transposed}\n', cfg.name);
-    fprintf(fid, '\\end{table}\n');
 end
 
 
 function write_eig_row(fid, rows, i, cfg)
 %WRITE_EIG_ROW One eigenvalue row of the transposed table: index, then each run.
-    fprintf(fid, '    $\\lambda_{%d}$', i);
+    fprintf(fid, '      $\\lambda_{%d}$', i);
     for j = 1:numel(rows)
         fprintf(fid, ' & %s', cell_str(rows(j), i, cfg));
     end
