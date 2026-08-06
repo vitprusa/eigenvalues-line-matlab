@@ -83,7 +83,7 @@ nothing else.
 | `eig_chebyshev_mapped` | mapped barycentric Chebyshev (MBCDM) | Kosloff–Tal-Ezer map, optional fifth argument `alpha` in `(0, 1]`, default `0.999`; needs Chebfun |
 | `eig_numerov` | Numerov | generalised eigenvalue problem `A y = lambda B y` |
 | `eig_numerov_corrected` | Numerov with the asymptotic correction | Paine–de Hoog–Anderssen correction on top of `eig_numerov` |
-| `eig_legendre_galerkin` | Legendre–Galerkin (LGCC) | basis `phi_k = P_k - P_{k+2}`; needs Chebfun, by far the slowest |
+| `eig_legendre_galerkin` | Legendre–Galerkin (LGCC) | basis `phi_k = P_k - P_{k+2}`; needs Chebfun |
 
 `eig_chebyshev_mapped` is the only one taking an extra argument:
 
@@ -131,10 +131,51 @@ generate_matslise_reference(500, 1e-12)
 run from `data/`. See `data/README.md` for the method, the citations, and where
 MATSLISE has to be located.
 
+## Paper experiments (`experiments_paper/`)
+
+`experiments_paper/eigenvalues_head/` produces the article's eigenvalue
+comparison. It generates its own data: for each test problem it runs every
+method in `src/` at `N = 500` and `N = 1000`, finite differences additionally at
+`N = 10000`, and times each run from a warm start, a throwaway call absorbing
+the JIT compilation and Chebfun's load. From a shell:
+
+```bash
+experiments_paper/eigenvalues_head/run_eigenvalues_head_paper.sh
+experiments_paper/eigenvalues_head/run_eigenvalues_head_paper.sh paine
+```
+
+The optional argument restricts the run to one problem (`paine`,
+`coffey_evans`).
+
+It writes one transposed booktabs table per problem into
+`results_paper/eigenvalues_head/`: rows are the eigenvalue indices and columns
+the runs — the MATSLISE reference plus every method and size — so that a single
+eigenvalue reads across all discretisations, with DOF and timing as the two
+leading body rows. The table carries `lambda_1` to `lambda_8` and then
+`lambda_50`, `lambda_100`, `lambda_400` and `lambda_500`.
+
+The spectra are cached as CSV under `results_paper/eigenvalues_head/cache/`,
+each carrying its DOF count and measured time in the header, and are read back
+rather than recomputed: the first run takes about two and a half minutes, a
+redraw of the table four seconds. Delete a cached CSV to compute that run again.
+
+The number of digits is set per problem in `problem_configs`. Both problems
+print six significant digits, except that a row needing more than eight decimals
+is written in scientific notation to two significant digits, every cell of it,
+so the row keeps one notation. In practice that is the Coffey–Evans ground
+state, which is zero and which the methods return as `1e-11` or so: six
+significant digits of that is seventeen decimals, and one such cell sets the
+width of its column for the whole table.
+
 ## Validation
 
-No automated test harness is committed. The following checks were run against
-the solvers as they stand:
+No automated test harness is committed. The paper experiment above is the
+standing cross-method check: it recomputes every method against the MATSLISE
+reference at each resolution, and its cached CSVs hold the full spectrum, the
+DOF count and the measured time of every run. The numbers are left to be read
+off the tables and the cache.
+
+Three further checks were run against the solvers as they stand:
 
 - All seven methods agree with the MATSLISE reference to the digits printed on
   both test problems: Paine `4.896669  10.045190  16.019267  23.266271
@@ -147,6 +188,10 @@ the solvers as they stand:
   `3e-12` on `[0, pi]`, `[-pi/2, pi/2]` and `[0, 2]`, against `3.9e-1` for
   the uncorrected `eig_numerov` — the correction is exact for `q = 0` by
   construction, so this also pins down the index alignment.
+
+The generated tables were checked with `pdflatex` against an `amsart` preamble
+matching the sibling project's (`a4paper`, `geometry scale=0.9`): both compile
+with no overfull or underfull boxes.
 
 ## Repository layout
 
@@ -166,6 +211,16 @@ data/                   MATSLISE reference eigenvalues (500 per problem) as
                         generate_matslise_reference.m that produced them, and a
                         README covering the method, the citations and where
                         MATSLISE must be located
+experiments_paper/eigenvalues_head/ the article's eigenvalue comparison:
+                        make_eigenvalues_head_paper_tables.m generates the data
+                        and writes the tables, run_eigenvalues_head_paper.sh
+                        runs it headless
+results_paper/eigenvalues_head/ one transposed booktabs table per problem,
+                        <problem>_eigenvalues_head_transposed.tex, plus cache/
+                        holding the spectrum of every run as
+                        <problem>_<method>_N<N>-eigenvalues.csv with its DOF
+                        count and measured time; the CSVs are the cache the
+                        table is drawn from, delete one to recompute that run
 src_old/                the original scripts this code was refactored from, kept
                         unchanged for reference: one script per method and
                         problem pair (SLP_* for q = exp(x), CE_* for
@@ -173,9 +228,12 @@ src_old/                the original scripts this code was refactored from, kept
                         timing and text-file writers inlined
 ```
 
-The repository tracks the generated reference data, so `data/` is available
-without rerunning anything; it can be regenerated with
-`generate_matslise_reference.m`, which needs MATSLISE.
+The repository tracks the generated artifacts, so the results are available
+without rerunning anything: the MATSLISE reference under `data/`, and the
+article's tables and the spectra behind them under `results_paper/`. They can be
+regenerated with `data/generate_matslise_reference.m`, which needs MATSLISE, and
+`experiments_paper/eigenvalues_head/run_eigenvalues_head_paper.sh`, which needs
+only MATLAB and Chebfun.
 
 ## Authors
 
@@ -184,7 +242,8 @@ of his master thesis, supervised by Vít Průša (<vit.prusa@matfyz.cuni.cz>). V
 Průša is responsible for the conceptualisation of the work.
 
 The refactored solvers in `src/`, the MATSLISE reference data and its generator
-in `data/`, and the documentation were written by Claude Code (Claude Opus 5).
+in `data/`, the paper experiment in `experiments_paper/`, and the documentation
+were written by Claude Code (Claude Opus 5).
 
 ## License
 
