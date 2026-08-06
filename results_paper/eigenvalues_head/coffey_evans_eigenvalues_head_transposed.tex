@@ -22,7 +22,7 @@
     DOF & --- & 500 & 1000 & 500 & 1000 & 10000 & 500 & 1000 & 500 & 1000 & 500 & 1000 & 500 & 1000 & 500 & 1000 \\
     Time (s) & 0.23 & 0.08 & 0.25 & 0.00 & 0.01 & 1.38 & 0.04 & 0.19 & 0.05 & 0.26 & 0.27 & 2.44 & 0.30 & 2.43 & 6.78 & 50.86 \\
     \midrule
-    $\lambda_{1}$ & $\mathbf{-4.2 \times 10^{-11}}$ & $8.2 \times 10^{-12}$ & $-2.7 \times 10^{-11}$ & $-8.7 \times 10^{-3}$ & $-2.2 \times 10^{-3}$ & $-2.2 \times 10^{-5}$ & $9.4 \times 10^{-12}$ & $0$ & $6.9 \times 10^{-12}$ & $1.5 \times 10^{-11}$ & $-2.6 \times 10^{-6}$ & $-1.6 \times 10^{-7}$ & $-2.6 \times 10^{-6}$ & $-1.6 \times 10^{-7}$ & $-4.0 \times 10^{-12}$ & $-2.5 \times 10^{-11}$ \\
+    $\lambda_{1}$ & $\mathbf{-4.2 \times 10^{-11}}$ & $8.2 \times 10^{-12}$ & $-2.7 \times 10^{-11}$ & -0.00865528 & -0.00216789 & $-2.2 \times 10^{-5}$ & $9.4 \times 10^{-12}$ & 0.00000 & $6.9 \times 10^{-12}$ & $1.5 \times 10^{-11}$ & $-2.6 \times 10^{-6}$ & $-1.6 \times 10^{-7}$ & $-2.6 \times 10^{-6}$ & $-1.6 \times 10^{-7}$ & $-4.0 \times 10^{-12}$ & $-2.5 \times 10^{-11}$ \\
     $\lambda_{2}$ & \textbf{117.946} & 117.946 & 117.946 & 117.905 & 117.936 & 117.946 & 117.946 & 117.946 & 117.946 & 117.946 & 117.946 & 117.946 & 117.946 & 117.946 & 117.946 & 117.946 \\
     $\lambda_{3}$ & \textbf{231.665} & 231.665 & 231.665 & 231.564 & 231.640 & 231.665 & 231.665 & 231.665 & 231.665 & 231.665 & 231.665 & 231.665 & 231.665 & 231.665 & 231.665 & 231.665 \\
     $\lambda_{4}$ & \textbf{231.665} & 231.665 & 231.665 & 231.627 & 231.655 & 231.665 & 231.665 & 231.665 & 231.665 & 231.665 & 231.665 & 231.665 & 231.665 & 231.665 & 231.665 & 231.665 \\
@@ -37,7 +37,7 @@
     & & & & & & & & & & & & & & & & \\
     $\lambda_{400}$ & \textbf{160450} & 160450 & 160450 & 92310.0 & 140510 & 160240 & 269597 & 160450 & 160450 & 160450 & 131871 & 158704 & 160449 & 160450 & 270241 & 160450 \\
     & & & & & & & & & & & & & & & & \\
-    $\lambda_{500}$ & \textbf{250450} & 250465 & 250450 & 102569 & 203179 & 249937 & 1209407520 & 250450 & 5768561 & 250450 & 153404 & 243649 & 250816 & 250450 & 654568756 & 250450 \\
+    $\lambda_{500}$ & \textbf{250450} & 250465 & 250450 & 102569 & 203179 & 249937 & $1.2 \times 10^{9}$ & 250450 & $5.8 \times 10^{6}$ & 250450 & 153404 & 243649 & 250816 & 250450 & $6.5 \times 10^{8}$ & 250450 \\
     \bottomrule
   \end{tabular}}}
   \caption{Eigenvalues of the Sturm--Liouville operator $-y'' + q(x)y$ on $[-\pi/2, \pi/2]$ with $q(x) = -2\beta\cos 2x + \beta^{2}\sin^{2} 2x$, $\beta = 30$, the Coffey--Evans problem \texttt{coffey\_evans}. Numerical eigenvalues computed by each discretisation \texttt{DST}, \texttt{FD}, \texttt{CDM}, \texttt{MBCDM}, \texttt{Numerov}, \texttt{Numerov+AC} and \texttt{LGCC} with varying degrees of freedom (DOF); compared with the reference eigenvalues from \texttt{MATSLISE}. Timing shows the time for the matrix assembly and full spectrum computation using \texttt{MATLAB}'s \lstinline{eig} function with the default settings.}

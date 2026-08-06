@@ -443,96 +443,79 @@ end
 
 function write_eig_row(fid, rows, i, cfg)
 %WRITE_EIG_ROW One eigenvalue row of the transposed table: index, then each run.
-%
-%   The notation is decided once for the whole row, so that a row is not part
-%   fixed and part scientific.
-    use_sci = row_needs_scientific(rows, i, cfg);
     fprintf(fid, '    $\\lambda_{%d}$', i);
     for j = 1:numel(rows)
-        fprintf(fid, ' & %s', cell_str(rows(j), i, cfg, use_sci));
+        fprintf(fid, ' & %s', cell_str(rows(j), i, cfg));
     end
     fprintf(fid, ' \\\\\n');
 end
 
 
-function tf = row_needs_scientific(rows, i, cfg)
-%ROW_NEEDS_SCIENTIFIC Whether eigenvalue row i is to be written in scientific notation.
-%
-%   Fixed notation is the default, but a value near zero needs as many decimals
-%   as it has leading zeros before it carries FMT_N significant digits, and one
-%   such cell sets the width of its whole column. The Coffey--Evans ground state
-%   is the case in point: it is zero, the methods return it as 1e-11 or so, and
-%   six significant digits of that is seventeen decimals, which alone doubles
-%   the natural width of the table. Such a row is written in scientific notation
-%   instead, every cell of it, so that the row keeps one notation throughout.
-    MAX_DECIMALS = 8;
-    tf = false;
-    if ~strcmp(cfg.fmt_mode, 'significant')
-        return;
-    end
-    for j = 1:numel(rows)
-        if i <= numel(rows(j).eigs)
-            v = rows(j).eigs(i);
-            if v ~= 0 && cfg.fmt_n - 1 - floor(log10(abs(v))) > MAX_DECIMALS
-                tf = true;
-                return;
-            end
-        end
-    end
-end
-
-
-function s = cell_str(row, i, cfg, use_sci)
+function s = cell_str(row, i, cfg)
 %CELL_STR One eigenvalue cell, bold for the reference row.
 %
-%   Digits come from the problem's FMT_MODE and FMT_N: a fixed number of
-%   decimals, or a fixed number of significant digits, the decimals then varying
-%   with the magnitude of the value. Plain fixed notation either way -- a cell
-%   whose magnitude leaves no room for a decimal simply shows all its integer
-%   digits, which only happens where a discretisation has broken down anyway.
+%   In 'decimals' mode a cell carries FMT_N digits after the point.
+%
+%   In 'significant' mode it carries FMT_N significant digits, the decimals
+%   varying with the magnitude, while fixed notation can show exactly that many
+%   -- which it can while the value has at most FMT_N digits before the point
+%   and no long run of leading zeros after it. Outside that range fixed notation
+%   turns ugly in one of two ways, and the cell is written in scientific
+%   notation to SCI_DIGITS significant digits instead:
+%
+%     too large  a value of 1.2e9 has no room for a decimal and prints every one
+%               of its ten integer digits, four more than were asked for
+%     too small  a value of 1e-11 needs sixteen decimals before its sixth
+%               significant digit appears
+%
+%   Either way the cell would be far wider than an ordinary one, and a column is
+%   as wide as its widest cell. The large case is where a discretisation has
+%   broken down at the top of its own spectrum, the small case the near-zero
+%   Coffey--Evans ground state; in both the digits past the second carry
+%   nothing, hence SCI_DIGITS = 2.
 %
 %   A run holding fewer than i eigenvalues -- one whose N is below the index
 %   asked for -- gets "---", the marker the DOF cell of the reference uses.
+    MAX_DECIMALS = 8;
+    SCI_DIGITS = 2;
+
     if i > numel(row.eigs)
         s = '---';
         return;
     end
-    % A scientific row carries two significant digits, not FMT_N. Six of them
-    % plus a \times 10^{-11} typesets about as wide as the seventeen-decimal
-    % fixed form it replaces, and one such cell sets the width of its column for
-    % the whole table; two digits bring the cell back to the width of an
-    % ordinary one. The row is the near-zero ground state, where the digits past
-    % the second carry nothing anyway.
-    SCI_DIGITS = 2;
-
     v = row.eigs(i);
-    if use_sci
-        if v == 0
-            s = '0';
-        else
-            e = floor(log10(abs(v)));
-            s = sprintf('%.*f \\times 10^{%d}', SCI_DIGITS - 1, v / 10^e, e);
-        end
-        if row.bold
-            s = sprintf('\\mathbf{%s}', s);
-        end
-        s = sprintf('$%s$', s);
+
+    if strcmp(cfg.fmt_mode, 'decimals')
+        s = bold_fixed(sprintf('%.*f', cfg.fmt_n, v), row.bold);
         return;
     end
-    switch cfg.fmt_mode
-        case 'decimals'
-            ndec = cfg.fmt_n;
-        case 'significant'
-            if v == 0
-                ndec = cfg.fmt_n - 1;
-            else
-                ndec = max(cfg.fmt_n - 1 - floor(log10(abs(v))), 0);
-            end
-        otherwise
-            error('head_paper:fmt', 'unknown fmt_mode %s', cfg.fmt_mode);
+    if ~strcmp(cfg.fmt_mode, 'significant')
+        error('head_paper:fmt', 'unknown fmt_mode %s', cfg.fmt_mode);
     end
-    s = sprintf('%.*f', ndec, v);
+
+    if v == 0
+        s = bold_fixed(sprintf('%.*f', cfg.fmt_n - 1, v), row.bold);
+        return;
+    end
+
+    e = floor(log10(abs(v)));
+    ndec = cfg.fmt_n - 1 - e;
+    if ndec >= 0 && ndec <= MAX_DECIMALS
+        s = bold_fixed(sprintf('%.*f', ndec, v), row.bold);
+        return;
+    end
+
+    s = sprintf('%.*f \\times 10^{%d}', SCI_DIGITS - 1, v / 10^e, e);
     if row.bold
+        s = sprintf('\\mathbf{%s}', s);
+    end
+    s = sprintf('$%s$', s);
+end
+
+
+function s = bold_fixed(s, bold)
+%BOLD_FIXED A fixed-notation cell, bold for the reference row.
+    if bold
         s = sprintf('\\textbf{%s}', s);
     end
 end
