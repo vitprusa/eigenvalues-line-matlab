@@ -18,8 +18,11 @@ function make_eigenvalues_head_paper_tables(name)
 %       These are the cached spectra: a run whose CSV is present is read back
 %       rather than recomputed, so a layout-only regeneration costs no
 %       computation at all. Delete a CSV to compute that run again.
-%     - one LaTeX snippet <problem>_eigenvalues_head_transposed.tex into
-%       results_paper/eigenvalues_head/, holding a booktabs table in the
+%     - two LaTeX snippets into results_paper/eigenvalues_head/, holding the
+%       same booktabs table in the two layouts of WRITE_LATEX_TRANSPOSED:
+%       <problem>_eigenvalues_head_transposed.tex splits the runs over two
+%       subfloats and needs subfig, <problem>_..._transposed_one_table.tex puts
+%       them all in one tabular and does not. Each is in the
 %       transposed layout: one column per run (the MATSLISE reference plus every
 %       method and size), one row per eigenvalue index, so that a single
 %       eigenvalue reads across all discretisations. The DOF and timing are the
@@ -71,6 +74,12 @@ function make_eigenvalues_head_paper_tables(name)
 
         tex = fullfile(out_dir, sprintf('%s_eigenvalues_head_transposed.tex', cfg.name));
         write_latex_transposed(tex, cfg, rows, NEIG, EXTRA, SPLIT);
+        fprintf('Wrote %s\n', tex);
+
+        % The same data in one tabular, for a document that does not load subfig.
+        tex = fullfile(out_dir, ...
+              sprintf('%s_eigenvalues_head_transposed_one_table.tex', cfg.name));
+        write_latex_transposed(tex, cfg, rows, NEIG, EXTRA, []);
         fprintf('Wrote %s\n', tex);
     end
 end
@@ -333,9 +342,11 @@ function write_latex_transposed(tex, cfg, rows, NEIG, extras, split_after)
 %   the DOF and timing become the two leading body rows, and the reference column
 %   stays bold.
 %
-%   The runs are split over two \subfloat blocks of one float, the first
-%   carrying the first SPLIT_AFTER methods and the second the rest. Both repeat
-%   the reference block, so that either can be read on its own.
+%   SPLIT_AFTER deals the runs over two \subfloat blocks of one float, the first
+%   carrying that many methods and the second the rest, both repeating the
+%   reference block so that either can be read on its own. Pass [] to put every
+%   run in one tabular instead; that layout needs no subfig, at the cost of a
+%   table wide enough that \resizebox has to scale it well down.
 %
 %   EXTRAS are eigenvalue indices past the leading NEIG, each written on a row of
 %   its own after an empty row, so that the jump in the index is visible. A
@@ -348,15 +359,28 @@ function write_latex_transposed(tex, cfg, rows, NEIG, extras, split_after)
     end
     closer = onCleanup(@() fclose(fid)); %#ok<NASGU>
 
+    split = ~isempty(split_after);
     t = caption_bits(cfg);
-    [parts, part_labels] = split_rows(rows, split_after);
+    if split
+        [parts, part_labels] = split_rows(rows, split_after);
+    else
+        parts = {rows};
+    end
 
     fprintf(fid, ['%% Eigenvalue comparison for the %s problem \\texttt{%s}: ', ...
         '%s,\n'], cfg.pretty, latex_name(cfg.name), t.method_list_plain);
-    fprintf(fid, ['%% %s, first %d eigenvalues, self-computed with timing.\n', ...
-        '%% Transposed layout: one column per run, one row per eigenvalue,\n', ...
-        '%% split over two subfloats that both repeat the reference block.\n'], ...
-        t.lev_note, NEIG);
+    if split
+        fprintf(fid, ['%% %s, first %d eigenvalues, self-computed with timing.\n', ...
+            '%% Transposed layout: one column per run, one row per eigenvalue,\n', ...
+            '%% split over two subfloats that both repeat the reference block.\n'], ...
+            t.lev_note, NEIG);
+    else
+        fprintf(fid, ['%% %s, first %d eigenvalues, self-computed with timing.\n', ...
+            '%% Transposed layout: one column per run, one row per eigenvalue,\n', ...
+            '%% every run in one tabular -- the same data as the subfloat version,\n', ...
+            '%% for a document that does not load subfig.\n'], ...
+            t.lev_note, NEIG);
+    end
     if ~isempty(extras)
         fprintf(fid, ['%% Extended with the eigenvalues %s;\n', ...
             '%% a tabular is scaled down if it exceeds the text width.\n'], ...
@@ -364,24 +388,36 @@ function write_latex_transposed(tex, cfg, rows, NEIG, extras, split_after)
     end
     fprintf(fid, '%%\n%% Requires in the preamble:\n');
     fprintf(fid, ['%%   \\usepackage{booktabs}\n', ...
-                  '%%   \\usepackage{amsmath}\n%%   \\usepackage{listings}\n', ...
-                  '%%   \\usepackage{subfig}           %% \\subfloat\n']);
+                  '%%   \\usepackage{amsmath}\n%%   \\usepackage{listings}\n']);
+    if split
+        fprintf(fid, '%%   \\usepackage{subfig}           %% \\subfloat\n');
+    end
     if ~isempty(extras)
         fprintf(fid, '%%   \\usepackage{graphicx}          %% \\resizebox\n');
     end
     fprintf(fid, '\n');
 
     fprintf(fid, '\\begin{table}[htbp]\n  \\centering\n');
-    for k = 1:numel(parts)
-        if k > 1
-            % Stacks the second subfloat under the first rather than beside it.
-            fprintf(fid, '  \\\\\n');
+    if split
+        for k = 1:numel(parts)
+            if k > 1
+                % Stacks the second subfloat under the first rather than beside it.
+                fprintf(fid, '  \\\\\n');
+            end
+            fprintf(fid, ['  \\subfloat[%s', ...
+                          '\\label{tab:eigenvalues_head_%s_transposed_%c}]{%%\n'], ...
+                    part_labels{k}, cfg.name, 'a' + k - 1);
+            write_tabular(fid, cfg, parts{k}, NEIG, extras);
+            fprintf(fid, '  }\n');
         end
-        fprintf(fid, ['  \\subfloat[%s', ...
-                      '\\label{tab:eigenvalues_head_%s_transposed_%c}]{%%\n'], ...
-                part_labels{k}, cfg.name, 'a' + k - 1);
-        write_tabular(fid, cfg, parts{k}, NEIG, extras);
-        fprintf(fid, '  }\n');
+        repeat_clause = ', which both subfloats repeat';
+        label_suffix = '';
+    else
+        write_tabular(fid, cfg, parts{1}, NEIG, extras);
+        repeat_clause = '';
+        % Distinct label: the two layouts hold the same numbers and may well be
+        % \input into the same document.
+        label_suffix = '_one_table';
     end
 
     timing_clause = [' Timing shows the time for the matrix assembly and ', ...
@@ -391,10 +427,11 @@ function write_latex_transposed(tex, cfg, rows, NEIG, extras, split_after)
         '$-y'''' + q(x)y$ on $[%s]$ with %s, the %s problem \\texttt{%s}. ', ...
         'Numerical eigenvalues computed by each discretisation %s with varying ', ...
         'degrees of freedom (DOF); compared with the reference eigenvalues from ', ...
-        '\\texttt{MATSLISE}, which both subfloats repeat.%s}\n'], ...
+        '\\texttt{MATSLISE}%s.%s}\n'], ...
         t.interval, cfg.q_text, cfg.pretty, latex_name(cfg.name), ...
-        t.method_list, timing_clause);
-    fprintf(fid, '  \\label{tab:eigenvalues_head_%s_transposed}\n', cfg.name);
+        t.method_list, repeat_clause, timing_clause);
+    fprintf(fid, '  \\label{tab:eigenvalues_head_%s_transposed%s}\n', ...
+            cfg.name, label_suffix);
     fprintf(fid, '\\end{table}\n');
 end
 
