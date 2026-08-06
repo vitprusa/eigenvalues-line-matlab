@@ -133,6 +133,12 @@ MATSLISE has to be located.
 
 ## Paper experiments (`experiments_paper/`)
 
+Two experiments, each with a driver that generates its own data and a shell
+runner beside it, writing into a directory of the same name under
+`results_paper/`.
+
+### Eigenvalue comparison (`eigenvalues_head`)
+
 `experiments_paper/eigenvalues_head/` produces the article's eigenvalue
 comparison. It generates its own data: for each test problem it runs every
 method in `src/` at `N = 500` and `N = 1000`, finite differences additionally at
@@ -147,7 +153,7 @@ experiments_paper/eigenvalues_head/run_eigenvalues_head_paper.sh paine
 The optional argument restricts the run to one problem (`paine`,
 `coffey_evans`).
 
-It writes one transposed booktabs table per problem into
+It writes one transposed table per problem into
 `results_paper/eigenvalues_head/`: rows are the eigenvalue indices and columns
 the runs — the MATSLISE reference plus every method and size — so that a single
 eigenvalue reads across all discretisations, with DOF and timing as the two
@@ -178,13 +184,56 @@ Either way the cell would be far wider than an ordinary one, and a column is as
 wide as its widest cell. The test is applied per cell, not per row, so a single
 run falling out of range does not change the notation of the rest of its row.
 
+### DOF sweep (`eigenvalues_dof_sweep`)
+
+`experiments_paper/eigenvalues_dof_sweep/` produces the article's DOF-sweep
+figures. It also generates its own data: for each test problem it runs every
+method in `src/` at `DOF = 100, 300` and `500` — DOF being the size of the
+matrix solved, which is `N` for every method here — and draws the resulting
+spectra against the eigenvalue index, indices 1 to 500, over the MATSLISE
+reference of `data/`. From a shell:
+
+```bash
+experiments_paper/eigenvalues_dof_sweep/run_dof_sweep_paper.sh
+experiments_paper/eigenvalues_dof_sweep/run_dof_sweep_paper.sh paine
+```
+
+With no argument it does both problems; the optional argument restricts the run
+to one (`paine`, `coffey_evans`).
+
+For each problem it writes two figures and a snippet holding both into
+`results_paper/eigenvalues_dof_sweep/`, the methods split so that no figure has
+to separate more than four colours:
+
+| figure | curves |
+| --- | --- |
+| `<problem>_dof_sweep_colour_a.eps` | reference, `DST`, `FD`, `CDM` |
+| `<problem>_dof_sweep_colour_b.eps` | reference, `MBCDM`, `Numerov`, `Numerov+AC`, `LGCC` |
+
+Both repeat the reference, so either can be read on its own. The figures carry
+no title, the problem and the panel being named by the file name and the
+caption. The method is encoded by colour and the DOF level by line style; the
+reference is a thick solid black line, drawn before the method curves so that it
+lies under them rather than over them, several of the methods tracking it too
+closely to remain visible otherwise. Both axes are linear, with the ordinate
+clipped just above the reference, so a run that breaks down at the top of its
+own spectrum leaves the axes rather than setting their scale. The `_colour`
+suffix marks these as the colour figures, leaving the plain names free for a
+black-and-white variant.
+
+The spectra are cached as CSV under `results_paper/eigenvalues_dof_sweep/cache/`
+in the same format as the comparison experiment, and are likewise read back
+rather than recomputed: a problem takes about half a minute from cold and a
+redraw of the figures costs nothing. Adding a problem is a case of
+`problem_config` and an entry of `problem_names`.
+
 ## Validation
 
-No automated test harness is committed. The paper experiment above is the
-standing cross-method check: it recomputes every method against the MATSLISE
-reference at each resolution, and its cached CSVs hold the full spectrum, the
+No automated test harness is committed. The paper experiments above are the
+standing cross-method check: they recompute every method against the MATSLISE
+reference at each resolution, and their cached CSVs hold the full spectrum, the
 DOF count and the measured time of every run. The numbers are left to be read
-off the tables and the cache.
+off the tables, the figures and the cache.
 
 Three further checks were run against the solvers as they stand:
 
@@ -226,12 +275,19 @@ experiments_paper/eigenvalues_head/ the article's eigenvalue comparison:
                         make_eigenvalues_head_paper_tables.m generates the data
                         and writes the tables, run_eigenvalues_head_paper.sh
                         runs it headless
-results_paper/eigenvalues_head/ one transposed booktabs table per problem,
+experiments_paper/eigenvalues_dof_sweep/ the article's DOF sweep:
+                        plot_dof_sweep_paper.m generates the data and draws the
+                        figures, run_dof_sweep_paper.sh runs it headless
+results_paper/eigenvalues_head/ one transposed table per problem,
                         <problem>_eigenvalues_head_transposed.tex, plus cache/
                         holding the spectrum of every run as
                         <problem>_<method>_N<N>-eigenvalues.csv with its DOF
                         count and measured time; the CSVs are the cache the
                         table is drawn from, delete one to recompute that run
+results_paper/eigenvalues_dof_sweep/ two figures per problem,
+                        <problem>_dof_sweep_colour_a.eps and _b.eps, and
+                        <problem>_dof_sweep_colour.tex holding both, plus
+                        cache/ in the same format as above
 src_old/                the original scripts this code was refactored from, kept
                         unchanged for reference: one script per method and
                         problem pair (SLP_* for q = exp(x), CE_* for
