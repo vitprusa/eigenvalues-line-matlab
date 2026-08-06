@@ -15,7 +15,7 @@ function lambdas = eig_legendre_galerkin(N, a, b, q)
 %   lambdas = eig_legendre_galerkin(500, 0, pi, @q_paine)
 %
 % Requires Chebfun (chebfun, legpoly, legcoeffs).  The assembly is O(N^2)
-% chebfun operations and is by far the slowest of the methods here.
+% chebfun operations.
 arguments
     % number of basis functions / number of eigenvalues
     N (1, 1) {mustBeInteger, mustBePositive}
