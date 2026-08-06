@@ -1,0 +1,13 @@
+# LaTeX build artifacts. The generated snippets are \input into a document that
+# is built elsewhere; anything a build leaves next to them is derived from the
+# tracked EPS and TeX and is not itself a result.
+*-eps-converted-to.pdf
+*.aux
+*.log
+*.out
+*.synctex.gz
+auto/
+
+# MATLAB autosave files and editor backups
+*.asv
+*~
