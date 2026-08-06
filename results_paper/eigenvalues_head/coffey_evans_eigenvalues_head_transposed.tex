@@ -1,0 +1,45 @@
+% Eigenvalue comparison for the Coffey--Evans problem \texttt{coffey\_evans}: DST, FD, CDM, MBCDM, Numerov, Numerov+AC, LGCC,
+% N = 500, 1000, 10000, first 8 eigenvalues, self-computed with timing.
+% Transposed layout: one column per run, one row per eigenvalue.
+% Extended with the eigenvalues $\lambda_{50}$, $\lambda_{100}$, $\lambda_{400}$ and $\lambda_{500}$;
+% the tabular is scaled down if it exceeds the text width.
+%
+% Requires in the preamble:
+%   \usepackage{booktabs}
+%   \usepackage{amsmath}
+%   \usepackage{listings}
+%   \usepackage{graphicx}          % \resizebox
+
+\begin{table}[htbp]
+  \centering
+  {\scriptsize
+  \setlength{\tabcolsep}{3pt}
+  \resizebox{\ifdim\width>\textwidth\textwidth\else\width\fi}{!}{%
+  \begin{tabular}{lrrrrrrrrrrrrrrrr}
+    \toprule
+    & \multicolumn{1}{c}{\texttt{MATSLISE}} & \multicolumn{2}{c}{\texttt{DST}} & \multicolumn{3}{c}{\texttt{FD}} & \multicolumn{2}{c}{\texttt{CDM}} & \multicolumn{2}{c}{\texttt{MBCDM}} & \multicolumn{2}{c}{\texttt{Numerov}} & \multicolumn{2}{c}{\texttt{Numerov+AC}} & \multicolumn{2}{c}{\texttt{LGCC}} \\
+    \cmidrule(lr){2-2} \cmidrule(lr){3-4} \cmidrule(lr){5-7} \cmidrule(lr){8-9} \cmidrule(lr){10-11} \cmidrule(lr){12-13} \cmidrule(lr){14-15} \cmidrule(lr){16-17}
+    DOF & --- & 500 & 1000 & 500 & 1000 & 10000 & 500 & 1000 & 500 & 1000 & 500 & 1000 & 500 & 1000 & 500 & 1000 \\
+    Time (s) & 0.23 & 0.08 & 0.25 & 0.00 & 0.01 & 1.38 & 0.04 & 0.19 & 0.05 & 0.26 & 0.27 & 2.44 & 0.30 & 2.43 & 6.78 & 50.86 \\
+    \midrule
+    $\lambda_{1}$ & $\mathbf{-4.2 \times 10^{-11}}$ & $8.2 \times 10^{-12}$ & $-2.7 \times 10^{-11}$ & $-8.7 \times 10^{-3}$ & $-2.2 \times 10^{-3}$ & $-2.2 \times 10^{-5}$ & $9.4 \times 10^{-12}$ & $0$ & $6.9 \times 10^{-12}$ & $1.5 \times 10^{-11}$ & $-2.6 \times 10^{-6}$ & $-1.6 \times 10^{-7}$ & $-2.6 \times 10^{-6}$ & $-1.6 \times 10^{-7}$ & $-4.0 \times 10^{-12}$ & $-2.5 \times 10^{-11}$ \\
+    $\lambda_{2}$ & \textbf{117.946} & 117.946 & 117.946 & 117.905 & 117.936 & 117.946 & 117.946 & 117.946 & 117.946 & 117.946 & 117.946 & 117.946 & 117.946 & 117.946 & 117.946 & 117.946 \\
+    $\lambda_{3}$ & \textbf{231.665} & 231.665 & 231.665 & 231.564 & 231.640 & 231.665 & 231.665 & 231.665 & 231.665 & 231.665 & 231.665 & 231.665 & 231.665 & 231.665 & 231.665 & 231.665 \\
+    $\lambda_{4}$ & \textbf{231.665} & 231.665 & 231.665 & 231.627 & 231.655 & 231.665 & 231.665 & 231.665 & 231.665 & 231.665 & 231.665 & 231.665 & 231.665 & 231.665 & 231.665 & 231.665 \\
+    $\lambda_{5}$ & \textbf{231.665} & 231.665 & 231.665 & 231.627 & 231.655 & 231.665 & 231.665 & 231.665 & 231.665 & 231.665 & 231.665 & 231.665 & 231.665 & 231.665 & 231.665 & 231.665 \\
+    $\lambda_{6}$ & \textbf{340.888} & 340.888 & 340.888 & 340.706 & 340.843 & 340.888 & 340.888 & 340.888 & 340.888 & 340.888 & 340.888 & 340.888 & 340.888 & 340.888 & 340.888 & 340.888 \\
+    $\lambda_{7}$ & \textbf{445.283} & 445.283 & 445.283 & 445.005 & 445.214 & 445.282 & 445.283 & 445.283 & 445.283 & 445.283 & 445.283 & 445.283 & 445.283 & 445.283 & 445.283 & 445.283 \\
+    $\lambda_{8}$ & \textbf{445.283} & 445.283 & 445.283 & 445.117 & 445.241 & 445.283 & 445.283 & 445.283 & 445.283 & 445.283 & 445.283 & 445.283 & 445.283 & 445.283 & 445.283 & 445.283 \\
+    & & & & & & & & & & & & & & & & \\
+    $\lambda_{50}$ & \textbf{2960.33} & 2960.33 & 2960.33 & 2939.74 & 2955.16 & 2960.27 & 2960.33 & 2960.33 & 2960.33 & 2960.33 & 2960.22 & 2960.32 & 2960.32 & 2960.33 & 2960.33 & 2960.33 \\
+    & & & & & & & & & & & & & & & & \\
+    $\lambda_{100}$ & \textbf{10452.6} & 10452.6 & 10452.6 & 10129.0 & 10370.7 & 10451.8 & 10452.6 & 10452.6 & 10452.6 & 10452.6 & 10446.0 & 10452.2 & 10452.6 & 10452.6 & 10452.6 & 10452.6 \\
+    & & & & & & & & & & & & & & & & \\
+    $\lambda_{400}$ & \textbf{160450} & 160450 & 160450 & 92310.0 & 140510 & 160240 & 269597 & 160450 & 160450 & 160450 & 131871 & 158704 & 160449 & 160450 & 270241 & 160450 \\
+    & & & & & & & & & & & & & & & & \\
+    $\lambda_{500}$ & \textbf{250450} & 250465 & 250450 & 102569 & 203179 & 249937 & 1209407520 & 250450 & 5768561 & 250450 & 153404 & 243649 & 250816 & 250450 & 654568756 & 250450 \\
+    \bottomrule
+  \end{tabular}}}
+  \caption{Eigenvalues of the Sturm--Liouville operator $-y'' + q(x)y$ on $[-\pi/2, \pi/2]$ with $q(x) = -2\beta\cos 2x + \beta^{2}\sin^{2} 2x$, $\beta = 30$, the Coffey--Evans problem \texttt{coffey\_evans}. Numerical eigenvalues computed by each discretisation \texttt{DST}, \texttt{FD}, \texttt{CDM}, \texttt{MBCDM}, \texttt{Numerov}, \texttt{Numerov+AC} and \texttt{LGCC} with varying degrees of freedom (DOF); compared with the reference eigenvalues from \texttt{MATSLISE}. Timing shows the time for the matrix assembly and full spectrum computation using \texttt{MATLAB}'s \lstinline{eig} function with the default settings.}
+  \label{tab:eigenvalues_head_coffey_evans_transposed}
+\end{table}

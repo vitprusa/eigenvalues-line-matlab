@@ -1,0 +1,45 @@
+% Eigenvalue comparison for the Paine problem \texttt{paine}: DST, FD, CDM, MBCDM, Numerov, Numerov+AC, LGCC,
+% N = 500, 1000, 10000, first 8 eigenvalues, self-computed with timing.
+% Transposed layout: one column per run, one row per eigenvalue.
+% Extended with the eigenvalues $\lambda_{50}$, $\lambda_{100}$, $\lambda_{400}$ and $\lambda_{500}$;
+% the tabular is scaled down if it exceeds the text width.
+%
+% Requires in the preamble:
+%   \usepackage{booktabs}
+%   \usepackage{amsmath}
+%   \usepackage{listings}
+%   \usepackage{graphicx}          % \resizebox
+
+\begin{table}[htbp]
+  \centering
+  {\scriptsize
+  \setlength{\tabcolsep}{3pt}
+  \resizebox{\ifdim\width>\textwidth\textwidth\else\width\fi}{!}{%
+  \begin{tabular}{lrrrrrrrrrrrrrrrr}
+    \toprule
+    & \multicolumn{1}{c}{\texttt{MATSLISE}} & \multicolumn{2}{c}{\texttt{DST}} & \multicolumn{3}{c}{\texttt{FD}} & \multicolumn{2}{c}{\texttt{CDM}} & \multicolumn{2}{c}{\texttt{MBCDM}} & \multicolumn{2}{c}{\texttt{Numerov}} & \multicolumn{2}{c}{\texttt{Numerov+AC}} & \multicolumn{2}{c}{\texttt{LGCC}} \\
+    \cmidrule(lr){2-2} \cmidrule(lr){3-4} \cmidrule(lr){5-7} \cmidrule(lr){8-9} \cmidrule(lr){10-11} \cmidrule(lr){12-13} \cmidrule(lr){14-15} \cmidrule(lr){16-17}
+    DOF & --- & 500 & 1000 & 500 & 1000 & 10000 & 500 & 1000 & 500 & 1000 & 500 & 1000 & 500 & 1000 & 500 & 1000 \\
+    Time (s) & 0.15 & 0.08 & 0.26 & 0.00 & 0.01 & 1.51 & 0.05 & 0.22 & 0.07 & 0.34 & 0.26 & 2.39 & 0.27 & 2.30 & 8.15 & 52.44 \\
+    \midrule
+    $\lambda_{1}$ & \textbf{4.89667} & 4.89667 & 4.89667 & 4.89665 & 4.89666 & 4.89667 & 4.89667 & 4.89667 & 4.89667 & 4.89667 & 4.89667 & 4.89667 & 4.89667 & 4.89667 & 4.89667 & 4.89667 \\
+    $\lambda_{2}$ & \textbf{10.0452} & 10.0452 & 10.0452 & 10.0451 & 10.0452 & 10.0452 & 10.0452 & 10.0452 & 10.0452 & 10.0452 & 10.0452 & 10.0452 & 10.0452 & 10.0452 & 10.0452 & 10.0452 \\
+    $\lambda_{3}$ & \textbf{16.0193} & 16.0193 & 16.0193 & 16.0189 & 16.0192 & 16.0193 & 16.0193 & 16.0193 & 16.0193 & 16.0193 & 16.0193 & 16.0193 & 16.0193 & 16.0193 & 16.0193 & 16.0193 \\
+    $\lambda_{4}$ & \textbf{23.2663} & 23.2663 & 23.2663 & 23.2654 & 23.2660 & 23.2663 & 23.2663 & 23.2663 & 23.2663 & 23.2663 & 23.2663 & 23.2663 & 23.2663 & 23.2663 & 23.2663 & 23.2663 \\
+    $\lambda_{5}$ & \textbf{32.2637} & 32.2637 & 32.2637 & 32.2616 & 32.2632 & 32.2637 & 32.2637 & 32.2637 & 32.2637 & 32.2637 & 32.2637 & 32.2637 & 32.2637 & 32.2637 & 32.2637 & 32.2637 \\
+    $\lambda_{6}$ & \textbf{43.2200} & 43.2200 & 43.2200 & 43.2157 & 43.2189 & 43.2200 & 43.2200 & 43.2200 & 43.2200 & 43.2200 & 43.2200 & 43.2200 & 43.2200 & 43.2200 & 43.2200 & 43.2200 \\
+    $\lambda_{7}$ & \textbf{56.1816} & 56.1816 & 56.1816 & 56.1737 & 56.1796 & 56.1816 & 56.1816 & 56.1816 & 56.1816 & 56.1816 & 56.1816 & 56.1816 & 56.1816 & 56.1816 & 56.1816 & 56.1816 \\
+    $\lambda_{8}$ & \textbf{71.1530} & 71.1530 & 71.1530 & 71.1395 & 71.1496 & 71.1530 & 71.1530 & 71.1530 & 71.1530 & 71.1530 & 71.1530 & 71.1530 & 71.1530 & 71.1530 & 71.1530 & 71.1530 \\
+    & & & & & & & & & & & & & & & & \\
+    $\lambda_{50}$ & \textbf{2507.05} & 2507.05 & 2507.05 & 2486.64 & 2501.92 & 2507.00 & 2507.05 & 2507.05 & 2507.05 & 2507.05 & 2506.95 & 2507.04 & 2507.05 & 2507.05 & 2507.05 & 2507.05 \\
+    & & & & & & & & & & & & & & & & \\
+    $\lambda_{100}$ & \textbf{10007.0} & 10007.0 & 10007.0 & 9683.64 & 9925.23 & 10006.2 & 10007.0 & 10007.0 & 10007.0 & 10007.0 & 10000.5 & 10006.6 & 10007.0 & 10007.0 & 10007.0 & 10007.0 \\
+    & & & & & & & & & & & & & & & & \\
+    $\lambda_{400}$ & \textbf{160007} & 160007 & 160007 & 91869.4 & 140067 & 159797 & 269438 & 160007 & 160007 & 160007 & 131429 & 158261 & 160007 & 160007 & 270077 & 160007 \\
+    & & & & & & & & & & & & & & & & \\
+    $\lambda_{500}$ & \textbf{250007} & 250006 & 250007 & 101735 & 202736 & 249494 & 1209407472 & 250007 & 5768515 & 250007 & 152595 & 243206 & 250007 & 250007 & 654568706 & 250007 \\
+    \bottomrule
+  \end{tabular}}}
+  \caption{Eigenvalues of the Sturm--Liouville operator $-y'' + q(x)y$ on $[0, \pi]$ with $q(x) = \mathrm{e}^{x}$, the Paine problem \texttt{paine}. Numerical eigenvalues computed by each discretisation \texttt{DST}, \texttt{FD}, \texttt{CDM}, \texttt{MBCDM}, \texttt{Numerov}, \texttt{Numerov+AC} and \texttt{LGCC} with varying degrees of freedom (DOF); compared with the reference eigenvalues from \texttt{MATSLISE}. Timing shows the time for the matrix assembly and full spectrum computation using \texttt{MATLAB}'s \lstinline{eig} function with the default settings.}
+  \label{tab:eigenvalues_head_paine_transposed}
+\end{table}
