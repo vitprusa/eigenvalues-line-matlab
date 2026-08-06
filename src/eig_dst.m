@@ -7,7 +7,7 @@ function lambdas = eig_dst(N, a, b, q)
 %
 %   lambdas = eig_dst(1000, 0, pi, @q_paine)
 %
-% Requires dst/idst (Signal Processing Toolbox).
+% Requires dst/idst.
 arguments
     % matrix size / number of eigenvalues
     N (1, 1) {mustBeInteger, mustBePositive}
