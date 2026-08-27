@@ -16,7 +16,7 @@
     \toprule
     Discretisation method & Description \\
     \midrule
-    \texttt{DST} & Discrete sine transform method as described in this work. \\
+    \texttt{DST} & Discrete sine transform method as described in this work, see Algorithm~\ref{alg:dst-line}. \\
     \texttt{FD} & Finite difference method. Standard second-order three-point stencil on the uniform interior grid of $N$ points, the potential evaluated at the grid points, own implementation. \\
     \texttt{CDM} & Chebyshev differentiation matrix method. Second-derivative differentiation matrix at $N+2$ Chebyshev points of the second kind as implemented in the \texttt{chebfun} library, see~\cite{driscoll.ta.hale.n.ea:chebfun}, \lstinline{diffmat} function; the two boundary rows and columns are removed to impose the homogeneous Dirichlet conditions, see also \cite{trefethen.ln:spectral}. The potential evaluated at the grid points, own implementation. \\
     \texttt{MBCDM} & Mapped barycentric Chebyshev differentiation matrix method, \cite{zhang.x:mapped}. As \texttt{CDM}, with the grid pushed towards a uniform distribution by the Kosloff--Tal-Ezer map $g(s) = \frac{\arcsin(\alpha s)}{\arcsin \alpha}$, $\alpha \in (0, 1]$, which relaxes the clustering of the Chebyshev points at the endpoints, \cite{kosloff.d.tal-ezer.h:modified}; the differentiation matrix is transformed by the chain rule, own implementation on top of \texttt{chebfun} library. The value $\alpha = 0.999$ is used throughout. \\
