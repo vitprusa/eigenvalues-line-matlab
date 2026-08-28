@@ -322,14 +322,6 @@ function t = caption_bits(cfg)
     ns = unique([cfg.methods.N]);
     t.lev_note = sprintf('N = %s', strjoin(arrayfun(@(n) num2str(n), ns, ...
                          'UniformOutput', false), ', '));
-
-    if abs(cfg.a) < 1e-12
-        t.interval = sprintf('0, \\pi');
-    else
-        t.interval = '-\pi/2, \pi/2';
-    end
-    t.interval = sprintf('$%s$', t.interval);
-    t.interval = t.interval(2:end-1);   % the caption supplies its own $[...]$
 end
 
 
@@ -410,26 +402,21 @@ function write_latex_transposed(tex, cfg, rows, NEIG, extras, split_after)
             write_tabular(fid, cfg, parts{k}, NEIG, extras);
             fprintf(fid, '  }\n');
         end
-        repeat_clause = ', which both subfloats repeat';
         label_suffix = '';
     else
         write_tabular(fid, cfg, parts{1}, NEIG, extras);
-        repeat_clause = '';
         % Distinct label: the two layouts hold the same numbers and may well be
         % \input into the same document.
         label_suffix = '_one_table';
     end
 
-    timing_clause = [' Timing shows the time for the matrix assembly and ', ...
-        'full spectrum computation using \texttt{MATLAB}''s ', ...
-        '\lstinline{eig} function with the default settings.'];
-    fprintf(fid, ['  \\caption{Eigenvalues of the Sturm--Liouville operator ', ...
-        '$-y'''' + q(x)y$ on $[%s]$ with %s, the %s problem \\texttt{%s}. ', ...
+    % The operator, the interval and the potential are left to the text that
+    % introduces the problem; the caption opens with the problem name alone.
+    fprintf(fid, ['  \\caption{%s problem. ', ...
         'Numerical eigenvalues computed by each discretisation %s with varying ', ...
-        'degrees of freedom (DOF); compared with the reference eigenvalues from ', ...
-        '\\texttt{MATSLISE}%s.%s}\n'], ...
-        t.interval, cfg.q_text, cfg.pretty, latex_name(cfg.name), ...
-        t.method_list, repeat_clause, timing_clause);
+        'degrees of freedom (\\texttt{DOF}); compared with the reference ', ...
+        'eigenvalues from \\texttt{MATSLISE}.}\n'], ...
+        cfg.pretty, t.method_list);
     fprintf(fid, '  \\label{tab:eigenvalues_head_%s_transposed%s}\n', ...
             cfg.name, label_suffix);
     fprintf(fid, '\\end{table}\n');
