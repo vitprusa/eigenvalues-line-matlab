@@ -218,7 +218,7 @@ function draw_panel(eps_file, cfg, results, keys, reference, NEIG)
     % one column per method and the reference last, which is not the order the
     % curves are drawn in.
     legend(main, hs, 'Location', 'northwest', 'NumColumns', numel(keys) + 1, ...
-           'FontSize', 7, 'Box', 'off');
+           'FontSize', 8.5, 'Box', 'off');
     grid(main, 'on'); box(main, 'on');
     xlim(main, [0 NEIG]);
     % Clipped to the physical band: the runs that break down at the top of their
@@ -265,7 +265,7 @@ function hs = draw_all(ax, cfg, results, keys, reference, colours, styles, nmax,
 
     idx = 1:min(nmax, numel(reference));
     h_ref = plot(ax, idx, reference(idx), 'k-', 'LineWidth', 2.6, ...
-                 'DisplayName', '$\mathtt{MATSLISE}$ (reference)');
+                 'DisplayName', '$\mathtt{MATSLISE}$');
 
     hs = gobjects(0);
     for mi = 1:numel(keys)
