@@ -265,7 +265,7 @@ function hs = draw_all(ax, cfg, results, keys, reference, colours, styles, nmax,
 
     idx = 1:min(nmax, numel(reference));
     h_ref = plot(ax, idx, reference(idx), 'k-', 'LineWidth', 2.6, ...
-                 'DisplayName', '\texttt{MATSLISE} (reference)');
+                 'DisplayName', '$\mathtt{MATSLISE}$ (reference)');
 
     hs = gobjects(0);
     for mi = 1:numel(keys)
@@ -278,7 +278,7 @@ function hs = draw_all(ax, cfg, results, keys, reference, colours, styles, nmax,
             lw = 2.0 + 1.0 * floor((k - 1) / numel(styles));  % thicker on each extra cycle
             hs(end+1) = plot(ax, idx, r.evals(idx), styles{si}, ...
                 'Color', colours.(key), 'LineWidth', lw, ...
-                'DisplayName', sprintf('%s (DOF = %d)', labels(key), r.dofs)); %#ok<AGROW>
+                'DisplayName', sprintf('$\\mathtt{%s}$ ($\\mathtt{DOF}$ = %d)', tt_label(labels(key)), r.dofs)); %#ok<AGROW>
         end
         % Pad this method's legend column to maxcount with invisible blank rows,
         % so the column-major legend keeps one column per method.
@@ -348,7 +348,7 @@ function write_latex(tex, cfg, NEIG)
     % caption opens with the problem name alone.
     fprintf(fid, ['  \\caption{%s problem. ', ...
         'Numerical eigenvalues computed by each discretisation %s with varying ', ...
-        'degrees of freedom (\\texttt{DOF}); compared with the reference ', ...
+        'degrees of freedom ($\\mathtt{DOF}$); compared with the reference ', ...
         'eigenvalues from \\texttt{MATSLISE}.}\n'], ...
         cfg.pretty, method_list);
     fprintf(fid, '  \\label{fig:dof_sweep_%s_colour}\n', cfg.name);
@@ -441,4 +441,13 @@ end
 function s = latex_name(name)
 %LATEX_NAME Escape underscores for \texttt{} in text mode.
     s = strrep(name, '_', '\_');
+end
+
+
+function s = tt_label(name)
+%TT_LABEL Method name for \mathtt{} in the math mode of a figure legend.
+%   The + of Numerov+AC is braced, so that it stays an ordinary symbol and
+%   keeps the tight spacing of the name instead of being set as a binary
+%   operator.
+    s = strrep(name, '+', '{+}');
 end
