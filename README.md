@@ -113,7 +113,7 @@ lambdas = eig_dst(1001, -pi/2, pi/2, @(x) q_coffey_evans(x, 50));
 
 ## Reference data (`data/`)
 
-`data/` holds 500 reference eigenvalues per problem, computed with MATSLISE from
+Directory `data/` holds 500 reference eigenvalues per problem, computed with MATSLISE from
 the command line, as `paine_matslise.csv` and `coffey_evans_matslise.csv`. Each
 CSV opens with a `#`-commented header recording the problem, the method, the
 citations, the exact calls, the wall clock time under a `WALL_CLOCK` key, and
