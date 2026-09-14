@@ -143,7 +143,7 @@ runner beside it, writing into a directory of the same name under
 
 ### Eigenvalue comparison (`eigenvalues_head`)
 
-`experiments_paper/eigenvalues_head/` produces the article's eigenvalue
+The scripts `experiments_paper/eigenvalues_head/` produces the article's eigenvalue
 comparison. It generates its own data: for each test problem it runs every
 method in `src/` at `N = 500` and `N = 1000`, finite differences additionally at
 `N = 10000`, and times each run from a warm start, a throwaway call absorbing
@@ -169,10 +169,10 @@ each carrying its DOF count and measured time in the header, and are read back
 rather than recomputed: the first run takes about two and a half minutes, a
 redraw of the table four seconds. Delete a cached CSV to compute that run again.
 
-The number of digits is set per problem in `problem_configs`, as `fmt_mode` and
+The number of digits displayed in the reported tables is set per problem in `problem_configs`, as `fmt_mode` and
 `fmt_n`: `'decimals'` prints `fmt_n` digits after the point, `'significant'`
 prints `fmt_n` significant digits by varying the decimals with the magnitude.
-Both problems are set to six significant digits.
+In tables reporting the results we use six significant digits.
 
 Fixed notation is used while it can show exactly that many digits, which it can
 while the value has at most six digits before the point and no long run of
@@ -190,7 +190,7 @@ run falling out of range does not change the notation of the rest of its row.
 
 ### DOF sweep (`eigenvalues_dof_sweep`)
 
-`experiments_paper/eigenvalues_dof_sweep/` produces the article's DOF-sweep
+The scripts `experiments_paper/eigenvalues_dof_sweep/` produces the article's DOF-sweep
 figures. It also generates its own data: for each test problem it runs every
 method in `src/` at `DOF = 100, 300` and `500` — DOF being the size of the
 matrix solved, which is `N` for every method here — and draws the resulting
@@ -233,19 +233,11 @@ redraw of the figures costs nothing. Adding a problem is a case of
 
 ## LaTeX helpers (`results_paper/latex_helpers`)
 
-Snippets written by hand rather than by an experiment, kept next to the
-generated ones so the article can `\input` them the same way:
+LaTeX snippet written by hand so the article can `\input` the description of the specific methods:
 
 | file | content |
 | --- | --- |
 | `methods_description_table.tex` | a `booktabs` table describing all seven discretisations of `src/`, one row per method |
-
-The table carries the labels the figures and the comparison tables use (`DST`,
-`FD`, `CDM`, `MBCDM`, `Numerov`, `Numerov+AC`, `LGCC`), and cites Chebfun, the
-Paine–de Hoog–Anderssen correction and the compact Legendre basis. Its label is
-`tab:methods_description_line`, distinct from the `tab:methods_description` of
-the companion table of the plane project, since both snippets end up in the same
-document. Nothing regenerates it: keep it in step with `src/eig_*.m` by hand.
 
 ## Validation
 
@@ -254,24 +246,6 @@ standing cross-method check: they recompute every method against the MATSLISE
 reference at each resolution, and their cached CSVs hold the full spectrum, the
 DOF count and the measured time of every run. The numbers are left to be read
 off the tables, the figures and the cache.
-
-Three further checks were run against the solvers as they stand:
-
-- All seven methods agree with the MATSLISE reference to the digits printed on
-  both test problems: Paine `4.896669  10.045190  16.019267  23.266271
-  32.263707`, Coffey–Evans `0  117.946  231.665  231.665  231.665`.
-- The Coffey–Evans spectrum was confirmed independently by a tridiagonal
-  finite-difference solve at `N = 80000` outside MATLAB, which reproduces the
-  level at `117.9463` between the ground state and the well-known triple
-  cluster at `231.6649`.
-- `eig_numerov_corrected` reproduces the `q = 0` spectrum to a relative
-  `3e-12` on `[0, pi]`, `[-pi/2, pi/2]` and `[0, 2]`, against `3.9e-1` for
-  the uncorrected `eig_numerov` — the correction is exact for `q = 0` by
-  construction, so this also pins down the index alignment.
-
-The generated tables were checked with `pdflatex` against an `amsart` preamble
-matching the sibling project's (`a4paper`, `geometry scale=0.9`): both compile
-with no overfull or underfull boxes.
 
 ## Repository layout
 
@@ -332,7 +306,7 @@ of his master thesis, supervised by Vít Průša (<vit.prusa@matfyz.cuni.cz>). V
 Průša is responsible for the conceptualisation of the work.
 
 The refactored solvers in `src/`, the MATSLISE reference data and its generator
-in `data/`, the paper experiment in `experiments_paper/`, and the documentation
+in `data/`, the scripts in in `experiments_paper/` generating the tables and figures reported in the paper, and the documentation
 were written by Claude Code (Claude Opus 5).
 
 ## License
