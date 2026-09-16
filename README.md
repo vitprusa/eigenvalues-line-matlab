@@ -12,7 +12,10 @@ diagonalises that operator on an interval. See
 
 > Fusi, Lorenzo, Oliver Křenek, Vít Průša, Casey Rodriguez, Rebecca Tozzi, and Martin Vejvoda. "Discrete versus continuous—Linear lattice models and their exact continuous counterparts." International Journal of Engineering Science 224 (2026): 104530, [10.1016/j.ijengsci.2026.104530](https://doi.org/10.1016/j.ijengsci.2026.104530)
 
-for reference and thorough discussion.
+for reference and thorough discussion. See also discussion in
+
+> Oliver Křenek, Vít Průša, Rebecca Tozzi, and Martin Vejvoda. "Uniform Approximation of Spectra of Linear Second Order Differential Operators via Discrete Sine Transform Based Discretisation." Unpublished manuscript, 2026. Charles University, Prague, and Università degli Studi di Firenze, Firenze.
+
 
 The problem solved here is the regular Sturm–Liouville problem in Liouville
 normal form,
@@ -31,7 +34,7 @@ The repository also contains finite-difference, Numerov, Chebyshev and
 Legendre–Galerkin implementations under `src/`, used to cross-check the DST
 results, and reference eigenvalues computed with MATSLISE under `data/`.
 
-This code is a refactoring of the MATLAB codes in the GitHub repository
+The code in this repository is a refactor of the MATLAB code in the GitHub repository
 <https://github.com/krenekoliver/Masters-thesis>, and builds on Oliver Křenek's
 master thesis "Rate-type models for metamaterials" (Charles University, Faculty
 of Mathematics and Physics, 2026),
