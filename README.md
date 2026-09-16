@@ -1,5 +1,7 @@
 # Discrete sine transform (DST) based discretisation of regular Sturm–Liouville operators on a line segment
 
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.22796407.svg)](https://doi.org/10.5281/zenodo.22796407)
+
 Discrete sine transform (DST) based method for the discretisation of regular Sturm–Liouville operators on a line segment and subsequent **computation of the eigenvalues**; comparison against the standard alternatives for eigenvalues computation.
 
 ## Overview
@@ -331,6 +333,7 @@ and, if you want to refer to the software itself, this repository
   year         = {2026},
   version      = {1.0.1},
   howpublished = {\url{https://github.com/vitprusa/eigenvalues-line-matlab}},
+  doi          = {10.5281/zenodo.22796407},
   license      = {BSD-3-Clause}
 }
 ```

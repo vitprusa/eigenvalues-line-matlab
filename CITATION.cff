@@ -36,6 +36,14 @@ contact:
     given-names: Vít
     email: vit.prusa@matfyz.cuni.cz
 repository-code: https://github.com/vitprusa/eigenvalues-line-matlab
+doi: 10.5281/zenodo.22796407
+identifiers:
+  - type: doi
+    value: 10.5281/zenodo.22796407
+    description: The concept DOI of the software.
+  - type: doi
+    value: 10.5281/zenodo.22796408
+    description: The DOI of version 1.0.1.
 license: BSD-3-Clause
 version: 1.0.1
 date-released: '2026-09-16'
