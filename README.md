@@ -309,6 +309,50 @@ The refactored solvers in `src/`, the MATSLISE reference data and its generator
 in `data/`, the scripts in in `experiments_paper/` generating the tables and figures reported in the paper, and the documentation
 were written by Claude Code (Claude Opus 5).
 
+## How to cite
+
+If you use this code, please cite the accompanying paper
+
+```bibtex
+@unpublished{KrenekPrusaTozziVejvoda2026,
+  author = {K{\v{r}}enek, Oliver and Pr{\r{u}}{\v{s}}a, V{\'i}t and Tozzi, Rebecca and Vejvoda, Martin},
+  title  = {Uniform approximation of spectra of linear second order differential operators via discrete sine transform based discretisation},
+  year   = {2026},
+  note   = {Unpublished manuscript. Charles University, Prague, and Universit{\`a} degli Studi di Firenze, Firenze}
+}
+```
+
+and, if you want to refer to the software itself, this repository
+
+```bibtex
+@misc{eigenvalues-line-matlab,
+  author       = {K{\v{r}}enek, Oliver and Pr{\r{u}}{\v{s}}a, V{\'i}t and Tozzi, Rebecca and Vejvoda, Martin},
+  title        = {eigenvalues-line-matlab: Discrete sine transform based computation of {S}turm--{L}iouville eigenvalues},
+  year         = {2026},
+  version      = {1.0.0},
+  howpublished = {\url{https://github.com/vitprusa/eigenvalues-line-matlab}},
+  license      = {BSD-3-Clause}
+}
+```
+
+The DST based discretisation itself is introduced and analysed in
+
+```bibtex
+@article{FusiKrenekPrusaRodriguezTozziVejvoda2026,
+  author  = {Fusi, Lorenzo and K{\v{r}}enek, Oliver and Pr{\r{u}}{\v{s}}a, V{\'i}t and Rodriguez, Casey and Tozzi, Rebecca and Vejvoda, Martin},
+  title   = {Discrete versus continuous---Linear lattice models and their exact continuous counterparts},
+  journal = {International Journal of Engineering Science},
+  volume  = {224},
+  pages   = {104530},
+  year    = {2026},
+  doi     = {10.1016/j.ijengsci.2026.104530}
+}
+```
+
+The same metadata is available in machine-readable form in `CITATION.cff`, and
+GitHub offers it through the "Cite this repository" button on the repository
+page.
+
 ## License
 
 The whole software is distributed under the BSD 3-Clause License.
