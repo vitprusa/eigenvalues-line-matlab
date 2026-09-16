@@ -1,12 +1,10 @@
-# Discrete sine transform (DST) based computation of Sturm–Liouville eigenvalues
+# Discrete sine transform (DST) based discretisation of regular Sturm–Liouville operators on a line segment
 
-Discrete sine transform (DST) based method for the eigenvalues of the
-one-dimensional Sturm–Liouville operator on an interval, and a comparison
-against the standard alternatives.
+Discrete sine transform (DST) based method for the discretisation of regular Sturm–Liouville operators on a line segment and subsequent **computation of the eigenvalues**; comparison against the standard alternatives for eigenvalues computation.
 
 ## Overview
 
-The core idea is to discretise the second-derivative operator with homogeneous
+The core idea is to discretise the second-derivative operator with zero
 Dirichlet boundary conditions using the **discrete sine transform (DST)**, which
 diagonalises that operator on an interval. See
 
@@ -17,8 +15,8 @@ for reference and thorough discussion. See also discussion in
 > Oliver Křenek, Vít Průša, Rebecca Tozzi, and Martin Vejvoda. "Uniform Approximation of Spectra of Linear Second Order Differential Operators via Discrete Sine Transform Based Discretisation." Unpublished manuscript, 2026. Charles University, Prague, and Università degli Studi di Firenze, Firenze.
 
 
-The problem solved here is the regular Sturm–Liouville problem in Liouville
-normal form,
+The problem solved here is the regular Sturm–Liouville eigenvalue problem in Liouville
+normal form/Schrödinger form,
 
 ```
 -y'' + q(x) y = lambda y,    y(a) = y(b) = 0,
@@ -29,6 +27,8 @@ is diagonal in DST space, so on the uniform interior grid of `N` points the
 operator is `idst(kvec .* dst(y))` with `kvec = (k*pi/(b-a))^2`, and the
 multiplication by `q` is diagonal on the same grid. The matrix is formed by
 applying the operator to the identity and handed to `eig`.
+
+The method should provide a **uniform approximation** of the spectrum of the Sturm--Liouville operator on the continuous level.
 
 The repository also contains finite-difference, Numerov, Chebyshev and
 Legendre–Galerkin implementations under `src/`, used to cross-check the DST
