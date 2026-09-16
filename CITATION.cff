@@ -37,7 +37,7 @@ contact:
     email: vit.prusa@matfyz.cuni.cz
 repository-code: https://github.com/vitprusa/eigenvalues-line-matlab
 license: BSD-3-Clause
-version: 1.0.0
+version: 1.0.1
 date-released: '2026-09-16'
 keywords:
   - Sturm–Liouville problem

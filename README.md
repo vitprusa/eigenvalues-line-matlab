@@ -329,7 +329,7 @@ and, if you want to refer to the software itself, this repository
   author       = {K{\v{r}}enek, Oliver and Pr{\r{u}}{\v{s}}a, V{\'i}t and Tozzi, Rebecca and Vejvoda, Martin},
   title        = {eigenvalues-line-matlab: Discrete sine transform based computation of {S}turm--{L}iouville eigenvalues},
   year         = {2026},
-  version      = {1.0.0},
+  version      = {1.0.1},
   howpublished = {\url{https://github.com/vitprusa/eigenvalues-line-matlab}},
   license      = {BSD-3-Clause}
 }
