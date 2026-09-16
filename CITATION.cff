@@ -1,0 +1,99 @@
+cff-version: 1.2.0
+message: >-
+  If you use this software, please cite it using the metadata from this file,
+  and cite the accompanying paper listed under preferred-citation.
+type: software
+title: >-
+  eigenvalues-line-matlab: Discrete sine transform based computation of
+  Sturm–Liouville eigenvalues
+abstract: >-
+  MATLAB implementation of a discrete sine transform (DST) based method for the
+  eigenvalues of the one-dimensional Sturm–Liouville operator on an interval
+  with homogeneous Dirichlet boundary conditions, together with
+  finite-difference, Numerov, Chebyshev and Legendre–Galerkin implementations
+  used for comparison, and reference eigenvalues computed with MATSLISE.
+authors:
+  - family-names: Křenek
+    given-names: Oliver
+    email: oliver.krenek741@student.cuni.cz
+    affiliation: Faculty of Mathematics and Physics, Charles University
+  - family-names: Průša
+    given-names: Vít
+    email: vit.prusa@matfyz.cuni.cz
+    affiliation: Faculty of Mathematics and Physics, Charles University
+  - family-names: Tozzi
+    given-names: Rebecca
+    email: rebecca.tozzi@unifi.it
+    affiliation: >-
+      Dipartimento di Matematica e Informatica "Ulisse Dini", Università degli
+      Studi di Firenze
+  - family-names: Vejvoda
+    given-names: Martin
+    email: martin.vejvoda@mff.cuni.cz
+    affiliation: Faculty of Mathematics and Physics, Charles University
+contact:
+  - family-names: Průša
+    given-names: Vít
+    email: vit.prusa@matfyz.cuni.cz
+repository-code: https://github.com/vitprusa/eigenvalues-line-matlab
+license: BSD-3-Clause
+version: 1.0.0
+date-released: '2026-09-16'
+keywords:
+  - Sturm–Liouville problem
+  - eigenvalues
+  - discrete sine transform
+  - spectral methods
+  - MATLAB
+preferred-citation:
+  type: unpublished
+  title: >-
+    Uniform approximation of spectra of linear second order differential
+    operators via discrete sine transform based discretisation
+  authors:
+    - family-names: Křenek
+      given-names: Oliver
+    - family-names: Průša
+      given-names: Vít
+    - family-names: Tozzi
+      given-names: Rebecca
+    - family-names: Vejvoda
+      given-names: Martin
+  year: 2026
+  notes: >-
+    Unpublished manuscript. Charles University, Prague, and Università degli
+    Studi di Firenze, Firenze.
+references:
+  - type: article
+    title: >-
+      Discrete versus continuous—Linear lattice models and their exact
+      continuous counterparts
+    authors:
+      - family-names: Fusi
+        given-names: Lorenzo
+      - family-names: Křenek
+        given-names: Oliver
+      - family-names: Průša
+        given-names: Vít
+      - family-names: Rodriguez
+        given-names: Casey
+      - family-names: Tozzi
+        given-names: Rebecca
+      - family-names: Vejvoda
+        given-names: Martin
+    journal: International Journal of Engineering Science
+    volume: 224
+    year: 2026
+    start: 104530
+    doi: 10.1016/j.ijengsci.2026.104530
+  - type: thesis
+    title: Rate-type models for metamaterials
+    authors:
+      - family-names: Křenek
+        given-names: Oliver
+    thesis-type: Master thesis
+    institution:
+      name: Charles University, Faculty of Mathematics and Physics
+    year: 2026
+    url: http://hdl.handle.net/20.500.11956/209791
+    repository-code: https://github.com/krenekoliver/Masters-thesis
